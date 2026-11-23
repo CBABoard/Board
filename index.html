@@ -148,9 +148,23 @@ if (e.target.classList.contains("star")) {
 document.querySelectorAll(".star").forEach(function(s) { s.classList.remove("hovered"); });
 }
 });
+const FEEDBACK_ENDPOINT = "https://script.google.com/macros/s/AKfycbxB4AjzXNrkcNy3OmIwZBOofdXcIFoCnQBNbieUfapxS70fg7Ic6xC6a6s3tJ7FZS6EsQ/exec";
 function submitFeedback() {
 const form = document.getElementById("feedbackForm");
 const thanks = document.getElementById("feedbackThanks");
+try {
+const sel = document.getElementById("chapterSelect");
+const depth = document.querySelector('input[name="depth"]:checked');
+const payload = {
+rating: selectedRating || "",
+chapter: sel && sel.value !== "" ? sel.options[sel.selectedIndex].text : "",
+depth: depth ? depth.value : "",
+improve: (document.getElementById("improveText") || {}).value || "",
+missing: (document.getElementById("missingText") || {}).value || "",
+language: (typeof currentLang !== "undefined" ? currentLang : "")
+};
+fetch(FEEDBACK_ENDPOINT, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) }).catch(function() {});
+} catch (e) { /* never block the thank-you screen */ }
 if (form) form.style.display = "none";
 if (thanks) thanks.style.display = "flex";
 }
